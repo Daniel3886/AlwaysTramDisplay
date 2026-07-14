@@ -1,0 +1,232 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-gtfs-schema
+      author: Daniel
+      changes:
+        - createTable:
+            tableName: agency
+            columns:
+              - column:
+                  name: agency_id
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: agency_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: agency_url
+                  type: varchar(2048)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: agency_timezone
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: agency_phone
+                  type: varchar(255)
+              - column:
+                  name: agency_lang
+                  type: varchar(255)
+
+        - createTable:
+            tableName: routes
+            columns:
+              - column:
+                  name: route_id
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: agency_id
+                  type: varchar(255)
+              - column:
+                  name: route_short_name
+                  type: varchar(255)
+              - column:
+                  name: route_long_name
+                  type: varchar(255)
+              - column:
+                  name: route_desc
+                  type: varchar(2048)
+              - column:
+                  name: route_type
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: route_color
+                  type: varchar(6)
+              - column:
+                  name: route_text_color
+                  type: varchar(6)
+
+        - addForeignKeyConstraint:
+            baseTableName: routes
+            baseColumnNames: agency_id
+            referencedTableName: agency
+            referencedColumnNames: agency_id
+            constraintName: fk_routes_agency
+
+        - createTable:
+            tableName: stops
+            columns:
+              - column:
+                  name: stop_id
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: stop_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: stop_lat
+                  type: double precision
+                  constraints:
+                    nullable: false
+              - column:
+                  name: stop_lon
+                  type: double precision
+                  constraints:
+                    nullable: false
+              - column:
+                  name: stop_code
+                  type: varchar(255)
+
+        - createTable:
+            tableName: trips
+            columns:
+              - column:
+                  name: trip_id
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: route_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: service_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: trip_headsign
+                  type: varchar(255)
+              - column:
+                  name: trip_short_name
+                  type: varchar(255)
+              - column:
+                  name: direction_id
+                  type: integer
+              - column:
+                  name: shape_id
+                  type: varchar(255)
+              - column:
+                  name: wheelchair_accessible
+                  type: integer
+
+        - addForeignKeyConstraint:
+            baseTableName: trips
+            baseColumnNames: route_id
+            referencedTableName: routes
+            referencedColumnNames: route_id
+            constraintName: fk_trips_route
+
+        - createTable:
+            tableName: calendar_dates
+            columns:
+              - column:
+                  name: service_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: exception_type
+                  type: integer
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            tableName: calendar_dates
+            columnNames: service_id, date
+            constraintName: pk_calendar_dates
+
+        - createTable:
+            tableName: stop_times
+            columns:
+              - column:
+                  name: trip_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: arrival_time
+                  type: varchar(8)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: departure_time
+                  type: varchar(8)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: stop_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: stop_sequence
+                  type: integer
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            tableName: stop_times
+            columnNames: trip_id, stop_sequence
+            constraintName: pk_stop_times
+
+        - addForeignKeyConstraint:
+            baseTableName: stop_times
+            baseColumnNames: trip_id
+            referencedTableName: trips
+            referencedColumnNames: trip_id
+            constraintName: fk_stop_times_trip
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: stop_times
+            baseColumnNames: stop_id
+            referencedTableName: stops
+            referencedColumnNames: stop_id
+            constraintName: fk_stop_times_stop
+
+        - createIndex:
+            tableName: stop_times
+            indexName: idx_stop_times_stop_id
+            columns:
+              - column:
+                  name: stop_id
+
+        - createIndex:
+            tableName: trips
+            indexName: idx_trips_service_id
+            columns:
+              - column:
+                  name: service_id

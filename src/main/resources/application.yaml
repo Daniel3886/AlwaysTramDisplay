@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: AlwaysTramDisplay
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/gtfs_app}
+    username: ${DB_USERNAME:gtfs_user}
+    password: ${DB_PASSWORD:gtfs_password}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 5000
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
