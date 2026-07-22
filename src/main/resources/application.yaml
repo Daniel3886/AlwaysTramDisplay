@@ -2,9 +2,9 @@ spring:
   application:
     name: AlwaysTramDisplay
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5433/gtfs_app}
-    username: ${DB_USERNAME:gtfs_user}
-    password: ${DB_PASSWORD:gtfs_password}
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/postgres}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -17,4 +17,8 @@ spring:
           batch_size: 5000
 
   liquibase:
+    enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+gtfs:
+  feed-url: ${GTFS_FEED_URL:https://ckan.multimediagdansk.pl/dataset/c24aa637-3619-4dc2-a171-a23eec8f2172/resource/30e783e4-2bec-4a7d-bb22-ee3e3b26ca96/download/gtfsgoogle.zip}
