@@ -9,3 +9,6 @@ spring:
       ddl-auto: validate
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+gtfs:
+  feed-url: http://localhost/gtfs.zip
